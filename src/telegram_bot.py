@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 class TelegramBot:
     def __init__(self):
         print("Initializing TelegramBot...")
-        self.token = "8300049409:AAGhYomw0vvPDwabom3jbj7pq2oSVjRNqoE"
+        self.token = "TELEGRAM_TOKEN"
         self.updater = Updater(self.token, use_context=True)
         dp = self.updater.dispatcher
         dp.add_handler(CommandHandler("start", self.start))
