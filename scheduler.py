@@ -1,7 +1,8 @@
+import asyncio
+import logging
+import threading
 from apscheduler.schedulers.background import BackgroundScheduler
 import pytz
-import logging
-import asyncio
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -9,8 +10,18 @@ logger = logging.getLogger(__name__)
 def send_daily_notification(telegram_bot):
     """Send daily notification to remind about check-in"""
     try:
-        # Use asyncio to run the async send_message method
-        asyncio.run(telegram_bot.send_message(7590222815, "Its 7 PM! Time to check-in NTU"))
+        # Create a new event loop for this thread
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        # Send the message
+        loop.run_until_complete(
+            telegram_bot.send_message(7590222815, "🕖 It's 7 PM! Time to check-in for NTU classes! 📚")
+        )
+        
+        # Close the loop
+        loop.close()
+        
         logger.info("Daily notification sent successfully")
     except Exception as e:
         logger.error(f"Failed to send daily notification: {e}")
@@ -31,3 +42,6 @@ def schedule_daily_notification(telegram_bot):
     )
     
     scheduler.start()
+    logger.info("Scheduler started - daily notifications set for 7:00 PM Singapore time")
+    
+    return scheduler

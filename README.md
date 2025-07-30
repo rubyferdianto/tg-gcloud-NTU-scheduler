@@ -152,20 +152,63 @@ For a Telegram bot, costs are typically very low (often free within the always-f
 
 ## Troubleshooting
 
-1. **Bot not responding**: Check Cloud Run logs:
+### Notifications Not Working
+
+1. **Check if the scheduler is running**:
+   ```bash
+   curl https://YOUR_SERVICE_URL/
+   ```
+   Look for `"scheduler_running": true` in the response.
+
+2. **Test manual notification**:
+   ```bash
+   curl -X POST https://YOUR_SERVICE_URL/trigger_notification
+   ```
+
+3. **Keep service warm** (recommended):
+   ```bash
+   # Update setup_scheduler.sh with your PROJECT_ID first
+   ./setup_scheduler.sh
+   ```
+   This creates a Cloud Scheduler job that pings your service every 5 minutes to prevent cold starts.
+
+4. **Check Cloud Run logs**:
+   ```bash
+   gcloud run services logs read telegram-bot --region us-central1 --limit 50
+   ```
+
+### Common Issues
+
+1. **Container cold starts**: Cloud Run shuts down idle containers, stopping the background scheduler.
+   - **Solution**: Use the `setup_scheduler.sh` script to create a keep-warm job.
+
+2. **Event loop errors**: `RuntimeError: Event loop is closed`
+   - These are usually harmless and related to webhook cleanup.
+
+3. **Bot not responding**: Check Cloud Run logs:
    ```bash
    gcloud run services logs read telegram-bot --region us-central1
    ```
 
-2. **Webhook issues**: Verify webhook is set:
+4. **Webhook issues**: Verify webhook is set:
    ```bash
    curl -X GET "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getWebhookInfo"
    ```
 
-3. **Secret access**: Ensure the Cloud Run service has access to secrets:
+5. **Secret access**: Ensure the Cloud Run service has access to secrets:
    ```bash
    gcloud secrets describe telegram-bot-token
    ```
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Health check with scheduler status |
+| `/ping` | GET | Simple ping for keep-alive |
+| `/webhook` | POST | Telegram webhook endpoint |
+| `/set_webhook` | POST | Configure Telegram webhook |
+| `/trigger_notification` | POST | Manual notification trigger (testing) |
 
 ## Support
 

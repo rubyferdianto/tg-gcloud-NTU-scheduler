@@ -19,8 +19,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Run the Flask app with Gunicorn for production
-<<<<<<< HEAD
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "0", "src.app:app"]
-=======
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "0", "src.app:app"]
->>>>>>> b5456a5 (updated)
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "0", "app:app"]
