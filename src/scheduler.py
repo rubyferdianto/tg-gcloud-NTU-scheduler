@@ -31,6 +31,3 @@ def schedule_daily_notification(telegram_bot):
     )
     
     scheduler.start()
-    logger.info("Scheduler started - daily notifications set for 7:00 PM Singapore time")
-    
-    return scheduler

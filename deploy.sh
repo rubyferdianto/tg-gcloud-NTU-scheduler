@@ -35,13 +35,9 @@ gcloud services enable cloudbuild.googleapis.com
 gcloud services enable run.googleapis.com
 gcloud services enable secretmanager.googleapis.com
 
-# Create secret for Telegram bot token (skip if already exists)
+# Create secret for Telegram bot token
 echo -e "${YELLOW}🔐 Creating secret for Telegram bot token${NC}"
-if gcloud secrets describe telegram-bot-token >/dev/null 2>&1; then
-    echo "Secret telegram-bot-token already exists, skipping creation"
-else
-    echo -n "$TELEGRAM_BOT_TOKEN" | gcloud secrets create telegram-bot-token --data-file=-
-fi
+echo -n "$TELEGRAM_BOT_TOKEN" | gcloud secrets create telegram-bot-token --data-file=-
 
 # Build and deploy the container
 echo -e "${YELLOW}🏗️  Building and deploying container${NC}"
@@ -54,7 +50,8 @@ gcloud run deploy $SERVICE_NAME \
     --memory 512Mi \
     --cpu 1 \
     --max-instances 10 \
-    --set-env-vars "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN"
+    --set-env-vars "PORT=8080" \
+    --set-secrets "TELEGRAM_BOT_TOKEN=telegram-bot-token:latest"
 
 # Get the service URL
 SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform managed --region $REGION --format 'value(status.url)')
@@ -67,7 +64,7 @@ echo -e "${YELLOW}🔗 Setting webhook URL and redeploying${NC}"
 gcloud run services update $SERVICE_NAME \
     --platform managed \
     --region $REGION \
-    --set-env-vars "WEBHOOK_URL=$SERVICE_URL,TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN"
+    --set-env-vars "WEBHOOK_URL=$SERVICE_URL"
 
 echo -e "${GREEN}✅ Webhook URL configured!${NC}"
 

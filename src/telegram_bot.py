@@ -8,7 +8,11 @@ logging.basicConfig(level=logging.INFO)
 class TelegramBot:
     def __init__(self, webhook_mode=False):
         print("Initializing TelegramBot...")
-        self.token = "TOKEN_TELEGRAM_BOT"
+        self.token = os.getenv("TELEGRAM_BOT_TOKEN")
+        if not self.token:
+            raise ValueError("TELEGRAM_BOT_TOKEN environment variable not set!")
+        
+        self.webhook_mode = webhook_mode
         self.application = Application.builder().token(self.token).build()
         self.application.add_handler(CommandHandler("start", self.start))
         self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_menu_selection))
