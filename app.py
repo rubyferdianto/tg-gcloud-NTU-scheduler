@@ -13,11 +13,24 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Initialize the Telegram bot in webhook mode
-telegram_bot = TelegramBot(webhook_mode=True)
+# Initialize the Telegram bot based on mode
+webhook_mode = os.getenv('WEBHOOK_MODE', 'true').lower() == 'true'
+telegram_bot = TelegramBot(webhook_mode=webhook_mode)
 
 # Set up the scheduler for daily notifications
 scheduler = schedule_daily_notification(telegram_bot)
+
+def run_polling_mode():
+    """Run bot in polling mode for local development"""
+    print("Starting Telegram Bot in polling mode for local development...")
+    logger.info("Bot running in polling mode")
+    telegram_bot.run()
+
+def run_webhook_mode():
+    """Run bot in webhook mode for production"""
+    port = int(os.environ.get('PORT', 8080))
+    logger.info(f"Bot running in webhook mode on port {port}")
+    app.run(host='0.0.0.0', port=port, debug=False)
 
 @app.route('/')
 def health_check():
@@ -106,5 +119,10 @@ def trigger_notification():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    # Check if we should run in polling mode (for local development)
+    if len(sys.argv) > 1 and sys.argv[1] == '--polling':
+        run_polling_mode()
+    elif not webhook_mode:
+        run_polling_mode() 
+    else:
+        run_webhook_mode()

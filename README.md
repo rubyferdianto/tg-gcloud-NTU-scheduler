@@ -129,15 +129,19 @@ pip install -r requirements.txt
 # Set environment variable
 export TELEGRAM_BOT_TOKEN="your_bot_token"
 
-# Run in development mode (uses original index.py)
-python src/index.py
+# Option 1: Run in polling mode using command line argument
+python app.py --polling
+
+# Option 2: Run in polling mode using environment variable
+export WEBHOOK_MODE=false
+python app.py
 ```
 
 ## Architecture
 
-- **Flask App** (`src/app.py`): Handles webhook requests from Telegram
-- **TelegramBot** (`src/telegram_bot.py`): Bot logic with webhook support
-- **Scheduler** (`src/scheduler.py`): Background job for daily notifications
+- **Flask App** (`app.py`): Unified application that handles both webhook and polling modes
+- **TelegramBot** (`telegram_bot.py`): Bot logic with webhook support  
+- **Scheduler** (`scheduler.py`): Background job for daily notifications
 - **Docker**: Containerized for Cloud Run deployment
 - **Gunicorn**: Production WSGI server
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-PROJECT_ID="PROJECT_ID"  # Update with your project ID
+PROJECT_ID="main-duality-467406-h5"  # Update with your project ID
 REGION="us-central1"
 SERVICE_NAME="telegram-bot"
 JOB_NAME="keep-warm-telegram-bot"
