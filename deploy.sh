@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Configuration - Update these values
-PROJECT_ID="main-duality-467406-h5"
+PROJECT_ID="PROJECT_ID" #Your Google Cloud Project ID
 SERVICE_NAME="telegram-bot"
 REGION="us-central1"
-TELEGRAM_BOT_TOKEN="8300049409:AAGhYomw0vvPDwabom3jbj7pq2oSVjRNqoE"
+TELEGRAM_BOT_TOKEN="TELEGRAM_BOT_TOKEN" #our bot token from BotFather
 
 # Colors for output
 RED='\033[0;31m'
